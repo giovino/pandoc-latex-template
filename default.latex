@@ -1,0 +1,743 @@
+%%
+% For additional information visit the GitHub page of this template:
+% https://github.com/giovino/pandoc-latex-template
+%%
+
+% \PassOptionsToPackage: tells LaTeX to behave as if its options were
+% passed, when it finally loads a package.
+
+% The package 'hyperref' provides LaTeX the ability to create hyperlinks
+% within the document
+%
+% The option 'unicode=true' allows to use characters of non-Latin based
+% languages in Acrobat’s bookmarks
+\PassOptionsToPackage{unicode=true}{hyperref}
+
+% The package 'url' defines a form of \verb command that allows
+% linebreaks at certain characters or combinations of characters,
+% accepts reconfiguration, and can usually be used in the argument
+% to another command. It is intended for formatting email addresses,
+% hypertext links, directories/paths, etc., which normally have no
+% spaces.
+%
+% The package option “[hyphens]” allows breaks after explicit
+% hyphen characters. The \url command will never ever hyphenate words.
+\PassOptionsToPackage{hyphens}{url}
+
+% The Pandoc variable 'colorlinks' will add color to link text;
+% automatically enabled if any of 'linkcolor', 'citecolor', 'urlcolor',
+% or 'toccolor' are set
+%
+%
+% The package 'xcolor' provides easy driver-independent access to
+% several kinds of colors, tints, shades, tones, and mixes of arbitrary
+% colors by means of color expressions like
+% \color{red!50!green!20!blue}.
+%
+% The option 'dvipsnames' loads a set of predefined colors.
+% The option 'svgnames*' loads  a set of predefined colors according
+% to SVG
+% The option 'x11names*' loads  a set of predefined colors according
+% to Unix/X11
+$if(colorlinks)$
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+$endif$
+
+% The \documentclass specifies which layout standard to use
+\documentclass[
+  $if(fontsize)$
+    $fontsize$,  % pandoc - font size for body text
+  $endif$
+  $if(lang)$
+    $babel-lang$,  % pandoc - additional language variables
+  $endif$
+  $if(papersize)$
+    $papersize$paper,  % pandoc - paper size
+  $endif$
+  $if(beamer)$
+    ignorenonframetext,  % beamer - suppress all text between frames
+    $if(handout)$
+    handout,  % beamer handout mode
+    $endif$
+    $if(aspectratio)$
+      aspectratio=$aspectratio$,  % beamer - aspect ratio
+    $endif$
+  $endif$
+  $for(classoption)$
+    $classoption$$sep$,  % pandoc - option for document class
+  $endfor$
+]{$documentclass$}
+
+
+% pandoc - when true, beamer options are set
+$if(beamer)$
+\setbeamertemplate{caption}[numbered]  % beamer - adds the figure or table number to the caption
+\setbeamertemplate{caption label separator}{: }  % beamer -  template is inserted between caption name and caption text
+\setbeamercolor{caption name}{fg=normal text.fg} % beamer -  Inserts the name of the current caption
+\beamertemplatenavigationsymbols
+  $if(navigation)$
+    $navigation$,  % pandoc - controls navigation symbols in beamer documents
+  $else$
+    empty,
+  $endif$
+$endif$
+
+
+% pandoc - when true, the beamerarticle package is loaded
+$if(beamerarticle)$
+\usepackage{beamerarticle}
+$endif$
+
+
+% pandoc - font package for use with pdflatex
+$if(fontfamily)$
+\usepackage[
+  $for(fontfamilyoptions)$
+    $fontfamilyoptions$$sep$,  % pandoc - options for package used as fontfamily
+  $endfor$]{$fontfamily$}
+$else$
+\usepackage{lmodern}  % Latin Modern fonts
+$endif$
+
+
+% pandoc - adjusts line spacing using the setspace package
+$if(linestretch)$
+\usepackage{setspace}
+\setstretch{$linestretch$}
+$endif$
+
+%
+% Fonts
+%
+
+% The amssymb package defines all the symbols found in the AMS symbol
+% fonts msam and msbm
+%
+% The amsmath package provides miscellaneous enhancements for improving
+% the information structure and printed output of documents that
+% contain mathematical formulas
+\usepackage{amssymb,amsmath}
+
+
+% The ifxetex package provides a way to check if a document is being
+% processed with xetex
+%
+% The ifluatex package looks for LuaTEX regardless of its mode and
+% provides the switch \ifluatex
+\usepackage{ifxetex,ifluatex}
+
+
+% The fixltx2e package is­sues a warn­ing in cur­rent LATEX Re­leases
+\usepackage{fixltx2e} % provides \textsubscript
+
+
+% Load packages related to ifxetex, ifluatex, pdftex, luatex or xelatex
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[
+    $if(fontenc)$
+      $fontenc$
+    $else$
+    T1
+    $endif$]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+$if(mathspec)$
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{unicode-math}
+  \fi
+$else$
+  \usepackage{unicode-math}
+$endif$
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+
+
+% pandoc - support for custom font families
+% see pandoc changelog for usage example https://pandoc.org/changelog.txt
+$for(fontfamilies)$
+  \newfontfamily{$fontfamilies.name$}[$fontfamilies.options$]{$fontfamilies.font$}
+$endfor$
+
+
+% pandoc - font families for use with xelatex or lualatex
+$if(mainfont)$
+    \setmainfont[
+      $for(mainfontoptions)$
+        $mainfontoptions$$sep$,
+      $endfor$]{$mainfont$}
+$endif$
+
+
+% pandoc - font families for use with xelatex or lualatex
+$if(sansfont)$
+    \setsansfont[
+      $for(sansfontoptions)$
+        $sansfontoptions$$sep$,
+      $endfor$]{$sansfont$}
+$endif$
+
+
+% pandoc - font families for use with xelatex or lualatex
+$if(monofont)$
+    \setmonofont[
+      Mapping=tex-ansi
+      $if(monofontoptions)$,
+        $for(monofontoptions)$
+          $monofontoptions$$sep$,
+        $endfor$
+      $endif$]{$monofont$}
+$endif$
+
+
+% pandoc - font families for use with xelatex or lualatex
+$if(mathfont)$
+% pandoc - if the mathspec variable is set, xelatex will use mathspec
+% instead of unicode-math
+  $if(mathspec)$
+    \ifxetex
+      \setmathfont(Digits,Latin,Greek)[
+        $for(mathfontoptions)$
+          $mathfontoptions$$sep$,
+        $endfor$]{$mathfont$}
+    \else
+      \setmathfont[
+        $for(mathfontoptions)$
+          $mathfontoptions$$sep$,
+        $endfor$]{$mathfont$}
+    \fi
+  $else$
+    \setmathfont[
+      $for(mathfontoptions)$
+        $mathfontoptions$$sep$,
+      $endfor$]{$mathfont$}
+  $endif$
+$endif$
+
+
+% pandoc - font families for use with xelatex or lualatex
+$if(CJKmainfont)$
+  \ifxetex
+    \usepackage{xeCJK}
+    \setCJKmainfont[$for(CJKoptions)$$CJKoptions$$sep$,$endfor$]{$CJKmainfont$}
+  \fi
+$endif$
+
+
+% pandoc - allow setting Japanese fonts when using LuaLaTeX
+$if(luatexjapresetoptions)$
+  \ifluatex
+    \usepackage[
+      $for(luatexjapresetoptions)$
+        $luatexjapresetoptions$$sep$,
+      $endfor$]{luatexja-preset}
+  \fi
+$endif$
+
+
+% pandoc - font families for use with xelatex or lualatex
+$if(CJKmainfont)$
+  \ifluatex
+    \usepackage[
+      $for(luatexjafontspecoptions)$
+        $luatexjafontspecoptions$$sep$,
+      $endfor$]{luatexja-fontspec}
+    \setmainjfont[
+      $for(CJKoptions)$
+        $CJKoptions$$sep$,
+      $endfor$]{$CJKmainfont$}
+  \fi
+$endif$
+\fi
+
+%
+% Themes
+%
+
+% pandoc - when true, beamer options are set
+$if(beamer)$
+% pandoc - themes for LaTeX beamer documents
+  $if(theme)$
+  \usetheme[
+    $for(themeoptions)$
+      $themeoptions$$sep$,
+    $endfor$]{$theme$}
+  $endif$
+  $if(colortheme)$
+  \usecolortheme{$colortheme$}
+  $endif$
+  $if(fonttheme)$
+  \usefonttheme{$fonttheme$}
+  $endif$
+  $if(mainfont)$
+  \usefonttheme{serif} % use mainfont rather than sansfont for slide text
+  $endif$
+  $if(innertheme)$
+  \useinnertheme{$innertheme$}
+  $endif$
+  $if(outertheme)$
+  \useoutertheme{$outertheme$}
+  $endif$
+$endif$
+
+
+% The upquote package uses straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+
+% The microtype package pro­vides a LATEX in­ter­face to the
+% mi­cro-ty­po­graphic ex­ten­sions
+\IfFileExists{microtype.sty}{%
+\usepackage[
+  $for(microtypeoptions)$
+    $microtypeoptions$$sep$,
+  $endfor$]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+
+% pandoc - uses document class settings for indentation (the default
+% LaTeX template otherwise removes indentation and adds space between
+% paragraphs)
+$if(indent)$
+$else$
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+$endif$
+
+
+% pandoc - internal variable used post conversion to Latex
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}  % flex­i­ble han­dling of ver­ba­tim text in­clud­ing
+$endif$
+
+
+% pandoc - add color to link text
+$if(colorlinks)$
+\usepackage{xcolor}
+$endif$
+
+
+% The hy­per­ref pack­age is used to han­dle cross-ref­er­enc­ing com­mands
+% in LATEX to pro­duce hy­per­text links in the doc­u­ment.
+\usepackage{hyperref}
+
+
+% Customization of hyperref settings
+\hypersetup{
+$if(title-meta)$
+            pdftitle={$title-meta$},
+$endif$
+$if(author-meta)$
+            pdfauthor={$author-meta$},
+$endif$
+$if(keywords)$
+            pdfkeywords={$for(keywords)$$keywords$$sep$, $endfor$},
+$endif$
+$if(colorlinks)$
+            colorlinks=true,
+            linkcolor=$if(linkcolor)$$linkcolor$$else$Maroon$endif$,
+            citecolor=$if(citecolor)$$citecolor$$else$Blue$endif$,
+            urlcolor=$if(urlcolor)$$urlcolor$$else$Blue$endif$,
+$else$
+            pdfborder={0 0 0},
+$endif$
+            breaklinks=true}
+% hyperref - don't use monospace font for urls
+\urlstyle{same}
+
+
+% pandoc - internal variable used post conversion to Latex
+$if(verbatim-in-note)$
+\VerbatimFootnotes % allows verbatim text in footnotes
+$endif$
+
+
+% pandoc - when true, geometry options are set
+$if(geometry)$
+\usepackage[
+  $for(geometry)$
+    $geometry$$sep$,
+  $endfor$]{geometry}
+$endif$
+
+
+% pandoc - when true, beamer options are set
+$if(beamer)$
+\newif\ifbibliography
+$endif$
+
+
+% pandoc - when true, listings options are set
+$if(listings)$
+\usepackage{listings}  % en­ables the user to type­set pro­grams (pro­gram­ming code) within LATEX
+\newcommand{\passthrough}[1]{#1}
+$endif$
+
+
+% pandoc - when true, listings options are set
+$if(lhs)$
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
+$endif$
+
+
+% pandoc - when true, internal variable
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
+
+
+% pandoc - when true, table configuration
+$if(tables)$
+\usepackage{longtable,booktabs}
+  $if(beamer)$
+  \usepackage{caption}
+  % These lines are needed to make table captions work with longtable:
+  \makeatletter
+  \def\fnum@table{\tablename~\thetable}
+  \makeatother
+  $else$
+  % Fix footnotes in tables (requires footnote package)
+  \IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{longtable}}{}
+  $endif$
+$endif$
+
+
+% pandoc - when true, graphic configuration
+$if(graphics)$
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+$endif$
+
+
+% pandoc - when true, beamer configuration
+$if(beamer)$
+% Prevent slide breaks in the middle of a paragraph:
+\widowpenalties 1 10000
+\raggedbottom
+  $if(section-titles)$
+  \setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+  }
+  \setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{part title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+  }
+  \setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{part title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+  }
+  \AtBeginPart{
+    \frame{\partpage}
+  }
+  \AtBeginSection{
+    \ifbibliography
+    \else
+      \frame{\sectionpage}
+    \fi
+  }
+  \AtBeginSubsection{
+    \frame{\subsectionpage}
+  }
+  $endif$
+$endif$
+
+
+% pandoc - when true, causes links to be printed as footnotes
+$if(links-as-notes)$
+% Make links footnotes instead of hotlinks:
+\DeclareRobustCommand{\href}[2]{#2\footnote{\url{#1}}}
+$endif$
+
+
+% pandoc - when true, enable strikeout
+$if(strikeout)$
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+$endif$
+
+
+% latex - set lengths
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+% pandoc - when true, configure beamer, numbering slides
+$if(numbersections)$
+\setcounter{secnumdepth}{
+  $if(secnumdepth)$
+  $secnumdepth$
+  $else$
+  5
+  $endif$}
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+
+
+% pandoc - when true, configure beamer, subparagraphs
+$if(beamer)$
+$else$
+  $if(subparagraph)$
+  $else$
+  % Redefines (sub)paragraphs to behave more like sections
+  \ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \fi
+  \ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \fi
+  $endif$
+$endif$
+
+
+% pandoc - when true, pagestyle options are set
+$if(pagestyle)$
+\pagestyle{$pagestyle$}
+$endif$
+
+
+
+% pandoc - set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+% pandoc - when true, set header-includes
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+
+% pandoc - when true, configure language options
+$if(lang)$
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[shorthands=off,$for(babel-otherlangs)$$babel-otherlangs$,$endfor$main=$babel-lang$]{babel}
+  $if(babel-newcommands)$
+    $babel-newcommands$
+  $endif$
+\else
+  % load polyglossia as late as possible as it *could* call bidi if RTL lang (e.g. Hebrew or Arabic)
+  \usepackage{polyglossia}
+  \setmainlanguage[$polyglossia-lang.options$]{$polyglossia-lang.name$}
+  $for(polyglossia-otherlangs)$
+    \setotherlanguage[$polyglossia-otherlangs.options$]{$polyglossia-otherlangs.name$}
+  $endfor$
+\fi
+$endif$
+
+
+% pandoc - when true, configure ifxetex, ifluatex, pdftex
+$if(dir)$
+\ifxetex
+  % load bidi as late as possible as it modifies e.g. graphicx
+  $if(latex-dir-rtl)$
+  \usepackage[RTLdocument]{bidi}
+  $else$
+  \usepackage{bidi}
+  $endif$
+\fi
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \TeXXeTstate=1
+  \newcommand{\RL}[1]{\beginR #1\endR}
+  \newcommand{\LR}[1]{\beginL #1\endL}
+  \newenvironment{RTL}{\beginR}{\endR}
+  \newenvironment{LTR}{\beginL}{\endL}
+\fi
+$endif$
+
+
+% pandoc - when true, configure natbib
+% The package natbib pro­vides a pack­age that im­ple­ments both
+% au­thor-year and num­bered ref­er­ences, as well as much de­tailed of
+% sup­port for other bib­li­og­ra­phy use.
+$if(natbib)$
+\usepackage[$natbiboptions$]{natbib}
+\bibliographystyle{$if(biblio-style)$$biblio-style$$else$plainnat$endif$}
+$endif$
+
+
+% pandoc - when true, configure biblatex
+% The package biblatex  is a com­plete reim­ple­men­ta­tion of the
+% bib­li­o­graphic fa­cil­i­ties pro­vided by LATEX
+$if(biblatex)$
+\usepackage[
+  $if(biblio-style)$
+    style=$biblio-style$,
+  $endif$
+  $for(biblatexoptions)$
+    $biblatexoptions$$sep$,
+  $endfor$]{biblatex}
+  $for(bibliography)$
+  \addbibresource{$bibliography$}
+  $endfor$
+$endif$
+
+
+% pandoc - when true, configure title
+$if(title)$
+\title{$title$
+  $if(thanks)$
+    \thanks{$thanks$}
+  $endif$}
+$endif$
+
+
+% pandoc - when true, configure subtitle
+$if(subtitle)$
+\providecommand{\subtitle}[1]{}
+\subtitle{$subtitle$}
+$endif$
+
+
+% pandoc - when true, configure author
+$if(author)$
+\author{
+  $for(author)$
+  $author$$sep$ \and $endfor$}
+$endif$
+
+
+% pandoc - when true, configure institute
+$if(institute)$
+\providecommand{\institute}[1]{}
+\institute{
+  $for(institute)$
+  $institute$$sep$ \and $endfor$}
+$endif$
+
+
+% set date
+\date{$date$}
+
+
+% pandoc - when true, configure title graphics
+$if(beamer)$
+  $if(titlegraphic)$
+  \titlegraphic{\includegraphics{$titlegraphic$}}
+  $endif$
+  $if(logo)$
+  \logo{\includegraphics{$logo$}}
+  $endif$
+$endif$
+
+
+%
+% Document
+%
+
+\begin{document}
+
+% pandoc - when true, configure title
+$if(title)$
+  $if(beamer)$
+  \frame{\titlepage}
+  $else$
+  \maketitle
+  $endif$
+  $if(abstract)$
+  \begin{abstract}
+  $abstract$
+  \end{abstract}
+  $endif$
+$endif$
+
+$for(include-before)$
+$include-before$
+$endfor$
+
+
+% pandoc - when true, configure table of contents
+$if(toc)$
+  $if(beamer)$
+  \begin{frame}
+  \tableofcontents[hideallsubsections]
+  \end{frame}
+  $else$
+  {
+  $if(colorlinks)$
+  \hypersetup{linkcolor=$if(toccolor)$$toccolor$$else$$endif$}
+  $endif$
+  \setcounter{tocdepth}{$toc-depth$}
+  \tableofcontents
+  }
+  $endif$
+$endif$
+
+
+% pandoc - when true, include list of tables
+$if(lot)$
+\listoftables
+$endif$
+
+
+% pandoc - when true, include list of figures
+$if(lof)$
+\listoffigures
+$endif$
+$body$
+
+
+% pandoc - when true, configure natbib
+$if(natbib)$
+  $if(bibliography)$
+    $if(biblio-title)$
+      $if(book-class)$
+      \renewcommand\bibname{$biblio-title$}
+      $else$
+      \renewcommand\refname{$biblio-title$}
+      $endif$
+      $endif$
+      $if(beamer)$
+      \begin{frame}[allowframebreaks]{$biblio-title$}
+      \bibliographytrue
+      $endif$
+    \bibliography{$for(bibliography)$$bibliography$$sep$,$endfor$}
+    $if(beamer)$
+    \end{frame}
+    $endif$
+  $endif$
+$endif$
+
+
+% pandoc - when true, configure biblatex
+$if(biblatex)$
+  $if(beamer)$
+  \begin{frame}[allowframebreaks]{$biblio-title$}
+  \bibliographytrue
+  \printbibliography[heading=none]
+  \end{frame}
+  $else$
+  \printbibliography$if(biblio-title)$[title=$biblio-title$]$endif$
+  $endif$
+$endif$
+
+$for(include-after)$
+$include-after$
+
+$endfor$
+\end{document}
